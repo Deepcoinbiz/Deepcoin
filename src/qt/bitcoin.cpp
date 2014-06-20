@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
     QApplication::setOrganizationName("Deepcoin");
-    QApplication::setOrganizationDomain("deepcoin.org");
+    QApplication::setOrganizationDomain("deepcoin.biz");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
         QApplication::setApplicationName("Deepcoin-Qt-testnet");
     else

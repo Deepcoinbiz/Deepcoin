@@ -7,7 +7,7 @@ SetCompressor /SOLID lzma
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 0.8.7.0
 !define COMPANY "Deepcoin project"
-!define URL http://www.deepcoin.org/
+!define URL http://deepcoin.biz/
 
 # MUI Symbol Definitions
 !define MUI_ICON "../share/pixmaps/bitcoin.ico"

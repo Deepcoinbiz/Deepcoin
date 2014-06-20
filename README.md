@@ -14,6 +14,8 @@ Deepcoin Vital Statistics
  - Subsidy halves at 43,200 and the next halving will be at double the height of the previous halving
  - Client port 22871 for testnet 32871
  - RPC port 22872 for testnet 32872
+ 
+For more information please go to http://deepcoin.biz.
 
 License
 -------
