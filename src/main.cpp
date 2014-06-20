@@ -1084,10 +1084,15 @@ uint256 static GetOrphanRoot(const CBlockHeader* pblock)
 
 int64 static GetBlockValue(int nHeight, int64 nFees)
 {
-    int64 nSubsidy = 50 * COIN;
+    int64 nSubsidy = 512 * COIN;
+    int halvingInterval = 43200;
+    int halvingGap = 86400; // Num of blocks between 1st and second halving
 
-    // Subsidy is cut in half every 840000 blocks, which will occur approximately every 4 years
-    nSubsidy >>= (nHeight / 840000); // Deepcoin: 840k blocks in ~4 years
+    while (nHeight > halvingInterval) {
+        nSubsidy /= 2;
+        halvingInterval += halvingGap;
+        halvingGap += 43200; // Next halving height gap is 43,200 blocks more than the last
+    }
 
     return nSubsidy + nFees;
 }
