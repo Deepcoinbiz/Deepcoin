@@ -1097,9 +1097,9 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
     return nSubsidy + nFees;
 }
 
-const int64 nTargetTimespan = 24 * 60 * 60; // Deepcoin: 1 day
-const int64 nTargetSpacing = 60; // Deepcoin: 1 minute
-const int64 nInterval = nTargetTimespan / nTargetSpacing;
+int64 nTargetTimespan = 24 * 60 * 60; // Deepcoin: 1 day
+int64 nTargetSpacing = 60; // Deepcoin: 1 minute
+int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
 // minimum amount of work that could possibly be required nTime after
