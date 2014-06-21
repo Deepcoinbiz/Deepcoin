@@ -1097,9 +1097,9 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
     return nSubsidy + nFees;
 }
 
-static const int64 nTargetTimespan = 24 * 60 * 60; // Deepcoin: 1 day
-static const int64 nTargetSpacing = 60; // Deepcoin: 1 minute
-static const int64 nInterval = nTargetTimespan / nTargetSpacing;
+const int64 nTargetTimespan = 24 * 60 * 60; // Deepcoin: 1 day
+const int64 nTargetSpacing = 60; // Deepcoin: 1 minute
+const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
 // minimum amount of work that could possibly be required nTime after
@@ -1187,6 +1187,9 @@ unsigned int static NiteGravityWell(const CBlockIndex* pindexLast, const CBlockH
 
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
+    if (pindexLast->nHeight + 1 > 2851200)
+        nTargetSpacing = 2* 60; // Deepcoin: 2 minute block target after 
+    
     static const int64 BlocksTargetSpacing = nTargetSpacing;
     static const unsigned int TimeDaySeconds = nTargetTimespan;
     int64 PastSecondsMin = TimeDaySeconds * 0.25;
