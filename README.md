@@ -11,7 +11,9 @@ Deepcoin Vital Statistics
  - 5 rounds of hashing (luffa, cubehash, shavite, simd, echo)
  - 1 minute block targets
  - Block reward starts at 512 coins a block
- - Subsidy halves at 43,200 and the next halving will be at double the height of the previous halving
+ - First subsidy halves at 43,200, subsidy halving gap will then be 86,400, after which the gap grows by 43,200
+ - Maximum coins will be 99,000,000
+ - Block time will be 2 minutes after block 2,841,200 for incresed TX fees in block after last block reward
  - Client port 22871 for testnet 32871
  - RPC port 22872 for testnet 32872
  
