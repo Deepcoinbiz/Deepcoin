@@ -210,7 +210,6 @@ HEADERS += src/qt/bitcoingui.h \
     src/allocators.h \
     src/ui_interface.h \
     src/qt/rpcconsole.h \
-    src/scrypt.h \
     src/version.h \
     src/netbase.h \
     src/clientversion.h \
@@ -219,7 +218,14 @@ HEADERS += src/qt/bitcoingui.h \
     src/threadsafety.h \
     src/limitedmap.h \
     src/qt/macnotificationhandler.h \
-    src/qt/splashscreen.h
+    src/qt/splashscreen.h \
+    src/hashblock.h \
+    src/sph_luffa.h \
+    src/sph_cubehash.h \
+    src/sph_echo.h \
+    src/sph_shavite.h \
+    src/sph_simd.h \
+    src/sph_types.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -286,11 +292,15 @@ SOURCES += src/qt/bitcoin.cpp \
     src/qt/notificator.cpp \
     src/qt/paymentserver.cpp \
     src/qt/rpcconsole.cpp \
-    src/scrypt.cpp \
     src/noui.cpp \
     src/leveldb.cpp \
     src/txdb.cpp \
-    src/qt/splashscreen.cpp
+    src/qt/splashscreen.cpp \
+    src/luffa.c \
+    src/cubehash.c \
+    src/shavite.c \
+    src/echo.c \
+    src/simd.c
 
 RESOURCES += src/qt/bitcoin.qrc
 
@@ -322,15 +332,6 @@ QT += testlib
 TARGET = deepcoin-qt_test
 DEFINES += BITCOIN_QT_TEST
   macx: CONFIG -= app_bundle
-}
-
-contains(USE_SSE2, 1) {
-DEFINES += USE_SSE2
-gccsse2.input  = SOURCES_SSE2
-gccsse2.output = $$PWD/build/${QMAKE_FILE_BASE}.o
-gccsse2.commands = $(CXX) -c $(CXXFLAGS) $(INCPATH) -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME} -msse2 -mstackrealign
-QMAKE_EXTRA_COMPILERS += gccsse2
-SOURCES_SSE2 += src/scrypt-sse2.cpp
 }
 
 # Todo: Remove this line when switching to Qt5, as that option was removed

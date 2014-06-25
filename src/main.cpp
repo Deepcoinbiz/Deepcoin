@@ -35,8 +35,8 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Deepcoin: starting difficulty is 1 / 2^12
+uint256 hashGenesisBlock("0x0000071288a535698e1a5145816d206f5699b461b6fd10622f622de15de5c0c6");
+static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Deepcoin: starting difficulty is 1
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 uint256 nBestChainWork = 0;
@@ -1187,6 +1187,12 @@ unsigned int static NiteGravityWell(const CBlockIndex* pindexLast, const CBlockH
 
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
+    if (pindexLast->nHeight <= 2) { // Blocks 1 and 2 have special difficulty rules
+        CBigNum bnNew;
+        bnNew.SetCompact(pindexLast->nBits); // Set to previous diff from genesis block which will be one
+        return bnNew.GetCompact();
+    }
+
     if (pindexLast->nHeight + 1 > 2851200)
         nTargetSpacing = 2* 60; // Deepcoin: 2 minute block target after 
     
@@ -1202,18 +1208,20 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 {
-    CBigNum bnTarget;
-    bnTarget.SetCompact(nBits);
+    if (hash != hashGenesisBlock) {
+        CBigNum bnTarget;
+        bnTarget.SetCompact(nBits);
 
-    // Check range
-    if (bnTarget <= 0 || bnTarget > bnProofOfWorkLimit)
-        return error("CheckProofOfWork() : nBits below minimum work");
+        // Check range
+        if (bnTarget <= 0 || bnTarget > bnProofOfWorkLimit)
+            return error("CheckProofOfWork() : nBits below minimum work");
 
-    // Check proof of work matches claimed amount
-    if (hash > bnTarget.getuint256())
-        return error("CheckProofOfWork() : hash doesn't match nBits");
+        // Check proof of work matches claimed amount
+        if (hash > bnTarget.getuint256())
+            return error("CheckProofOfWork() : hash doesn't match nBits");
 
-    return true;
+        return true;
+    }
 }
 
 // Return maximum amount of blocks that other nodes claim to have
@@ -2109,26 +2117,8 @@ bool CBlock::CheckBlock(CValidationState &state, bool fCheckPOW, bool fCheckMerk
     if (vtx.empty() || vtx.size() > MAX_BLOCK_SIZE || ::GetSerializeSize(*this, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
         return state.DoS(100, error("CheckBlock() : size limits failed"));
 
-    // Deepcoin: Special short-term limits to avoid 10,000 BDB lock limit:
-    if (GetBlockTime() < 1376568000)  // stop enforcing 15 August 2013 00:00:00
-    {
-        // Rule is: #unique txids referenced <= 4,500
-        // ... to prevent 10,000 BDB lock exhaustion on old clients
-        set<uint256> setTxIn;
-        for (size_t i = 0; i < vtx.size(); i++)
-        {
-            setTxIn.insert(vtx[i].GetHash());
-            if (i == 0) continue; // skip coinbase txin
-            BOOST_FOREACH(const CTxIn& txin, vtx[i].vin)
-                setTxIn.insert(txin.prevout.hash);
-        }
-        size_t nTxids = setTxIn.size();
-        if (nTxids > 4500)
-            return error("CheckBlock() : 15 August maxlocks violation");
-    }
-
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(GetPoWHash(), nBits))
+    if (fCheckPOW && !CheckProofOfWork(GetHash(), nBits))
         return state.DoS(50, error("CheckBlock() : proof of work failed"));
 
     // Check timestamp
@@ -2299,20 +2289,7 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain)
     {
-        // Extra checks to prevent "fill up memory by spamming with bogus blocks"
-        int64 deltaTime = pblock->GetBlockTime() - pcheckpoint->nTime;
-        if (deltaTime < 0)
-        {
-            return state.DoS(100, error("ProcessBlock() : block with timestamp before last checkpoint"));
-        }
-        CBigNum bnNewBlock;
-        bnNewBlock.SetCompact(pblock->nBits);
-        CBigNum bnRequired;
-        bnRequired.SetCompact(ComputeMinWork(pcheckpoint->nBits, deltaTime));
-        if (bnNewBlock > bnRequired)
-        {
-            return state.DoS(100, error("ProcessBlock() : block with too little proof-of-work"));
-        }
+
     }
 
 
@@ -2752,11 +2729,16 @@ bool LoadBlockIndex()
 {
     if (fTestNet)
     {
+        // CBlock(hash=00000d47bb3df920a65be7e8500f492d046be75cb410c339299445dd87525d9c, ver=1, hashPrevBlock=0000000000000000000000000000000000000000000000000000000000000000, hashMerkleRoot=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, nTime=1403684962, nBits=1d00ffff, nNonce=1017064580, vtx=1)
+        // CTransaction(hash=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+        // CTxIn(COutPoint(0, 4294967295), coinbase 04ffff001d01042d4242432032352f30362f3134205553207370656369616c20666f726365732061727269766520696e2049726171)
+        // CTxOut(nValue=512.00000000, scriptPubKey=04e163fedcf0a31464ac92e0d5ebb4)
+        // vMerkleTree: 4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f
         pchMessageStart[0] = 0xbf;
         pchMessageStart[1] = 0xc0;
         pchMessageStart[2] = 0xd1;
         pchMessageStart[3] = 0xe2;
-        hashGenesisBlock = uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f");
+        hashGenesisBlock = uint256("0x00000d47bb3df920a65be7e8500f492d046be75cb410c339299445dd87525d9c");
     }
 
     //
@@ -2782,33 +2764,32 @@ bool InitBlockIndex() {
     // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
     if (!fReindex) {
         // Genesis Block:
-        // CBlock(hash=12a765e31ffd4059bada, PoW=0000050c34a64b415b6b, ver=1, hashPrevBlock=00000000000000000000, hashMerkleRoot=97ddfbbae6, nTime=1317972665, nBits=1e0ffff0, nNonce=2084524493, vtx=1)
-        //   CTransaction(hash=97ddfbbae6, ver=1, vin.size=1, vout.size=1, nLockTime=0)
-        //     CTxIn(COutPoint(0000000000, -1), coinbase 04ffff001d0104404e592054696d65732030352f4f63742f32303131205374657665204a6f62732c204170706c65e280997320566973696f6e6172792c2044696573206174203536)
-        //     CTxOut(nValue=50.00000000, scriptPubKey=040184710fa689ad5023690c80f3a4)
-        //   vMerkleTree: 97ddfbbae6
+        // CBlock(hash=0000071288a535698e1a5145816d206f5699b461b6fd10622f622de15de5c0c6, ver=1, hashPrevBlock=0000000000000000000000000000000000000000000000000000000000000000, hashMerkleRoot=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, nTime=1403684952, nBits=1d00ffff, nNonce=1061556860, vtx=1)
+        // CTransaction(hash=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+        // CTxIn(COutPoint(0, 4294967295), coinbase 04ffff001d01042d4242432032352f30362f3134205553207370656369616c20666f726365732061727269766520696e2049726171)
+        // CTxOut(nValue=512.00000000, scriptPubKey=04e163fedcf0a31464ac92e0d5ebb4)
+        // vMerkleTree: 4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f
 
-        // Genesis block
-        const char* pszTimestamp = "NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56";
+        const char* pszTimestamp = "BBC 25/06/14 US special forces arrive in Iraq";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 50 * COIN;
-        txNew.vout[0].scriptPubKey = CScript() << ParseHex("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9") << OP_CHECKSIG;
+        txNew.vout[0].nValue = 512 * COIN;
+        txNew.vout[0].scriptPubKey = CScript() << ParseHex("04e163fedcf0a31464ac92e0d5ebb433662398948b93c1160d29d6a772d19587a39ceefe2d2cf987d12d9290c37786674b9bfc8c175f6190031e09239291cfbe2f") << OP_CHECKSIG;
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1317972665;
-        block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2084524493;
+        block.nTime    = 1403684952;
+        block.nBits    = 0x1d00ffff;
+        block.nNonce   = 1061556860;
 
         if (fTestNet)
         {
-            block.nTime    = 1317798646;
-            block.nNonce   = 385270584;
+            block.nTime    = 1403684962;
+            block.nNonce   = 1017064580;
         }
 
         //// debug print
@@ -2816,8 +2797,8 @@ bool InitBlockIndex() {
         printf("%s\n", hash.ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
         block.print();
+        assert(block.hashMerkleRoot == uint256("0x4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f"));
         assert(hash == hashGenesisBlock);
 
         // Start new block file
@@ -4537,7 +4518,7 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
 
 bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
-    uint256 hash = pblock->GetPoWHash();
+    uint256 hash = pblock->GetHash();
     uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
 
     if (hash > hashTarget)
@@ -4603,47 +4584,26 @@ void static DeepcoinMiner(CWallet *pwallet)
                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
         //
-        // Pre-build hash buffers
-        //
-        char pmidstatebuf[32+16]; char* pmidstate = alignup<16>(pmidstatebuf);
-        char pdatabuf[128+16];    char* pdata     = alignup<16>(pdatabuf);
-        char phash1buf[64+16];    char* phash1    = alignup<16>(phash1buf);
-
-        FormatHashBuffers(pblock, pmidstate, pdata, phash1);
-
-        unsigned int& nBlockTime = *(unsigned int*)(pdata + 64 + 4);
-        unsigned int& nBlockBits = *(unsigned int*)(pdata + 64 + 8);
-        //unsigned int& nBlockNonce = *(unsigned int*)(pdata + 64 + 12);
-
-
-        //
         // Search
         //
         int64 nStart = GetTime();
         uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+        uint256 hash;
         loop
         {
-            unsigned int nHashesDone = 0;
+            hash = pblock->GetHash();
+            if (hash <= hashTarget){
+                // nHashesDone += pblock->nNonce;
+                SetThreadPriority(THREAD_PRIORITY_NORMAL);
 
-            uint256 thash;
-            char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
-            loop
-            {
-                scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad);
+                printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+                pblock->print();
 
-                if (thash <= hashTarget)
-                {
-                    // Found a solution
-                    SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                    CheckWork(pblock, *pwallet, reservekey);
-                    SetThreadPriority(THREAD_PRIORITY_LOWEST);
-                    break;
-                }
-                pblock->nNonce += 1;
-                nHashesDone += 1;
-                if ((pblock->nNonce & 0xFF) == 0)
-                    break;
+                CheckWork(pblock, *pwalletMain, reservekey);
+                SetThreadPriority(THREAD_PRIORITY_LOWEST);
+                break;
             }
+            ++pblock->nNonce;
 
             // Meter hashes/sec
             static int64 nHashCounter;
@@ -4653,7 +4613,8 @@ void static DeepcoinMiner(CWallet *pwallet)
                 nHashCounter = 0;
             }
             else
-                nHashCounter += nHashesDone;
+                // nHashCounter += nHashesDone;
+                nHashCounter += 1;
             if (GetTimeMillis() - nHPSTimerStart > 4000)
             {
                 static CCriticalSection cs;
@@ -4664,21 +4625,17 @@ void static DeepcoinMiner(CWallet *pwallet)
                         dHashesPerSec = 1000.0 * nHashCounter / (GetTimeMillis() - nHPSTimerStart);
                         nHPSTimerStart = GetTimeMillis();
                         nHashCounter = 0;
-                        static int64 nLogTime;
-                        if (GetTime() - nLogTime > 30 * 60)
-                        {
-                            nLogTime = GetTime();
-                            printf("hashmeter %6.0f khash/s\n", dHashesPerSec/1000.0);
-                        }
+                        printf("hashmeter %6.0f khash/s\n", dHashesPerSec/1000.0);
                     }
                 }
             }
 
             // Check for stop or if block needs to be rebuilt
             boost::this_thread::interruption_point();
+            // disable in testing
             if (vNodes.empty())
                 break;
-            if (pblock->nNonce >= 0xffff0000)
+            if (++pblock->nNonce >= 0xffff0000)
                 break;
             if (nTransactionsUpdated != nTransactionsUpdatedLast && GetTime() - nStart > 60)
                 break;
@@ -4687,11 +4644,9 @@ void static DeepcoinMiner(CWallet *pwallet)
 
             // Update nTime every few seconds
             pblock->UpdateTime(pindexPrev);
-            nBlockTime = ByteReverse(pblock->nTime);
             if (fTestNet)
             {
                 // Changing pblock->nTime can change work required on testnet:
-                nBlockBits = ByteReverse(pblock->nBits);
                 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
             }
         }
