@@ -36,7 +36,7 @@ unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
 uint256 hashGenesisBlock("0x0000071288a535698e1a5145816d206f5699b461b6fd10622f622de15de5c0c6");
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Deepcoin: starting difficulty is 1
+static CBigNum bnProofOfWorkLimit(~uint256(0) >> 26);
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 uint256 nBestChainWork = 0;
