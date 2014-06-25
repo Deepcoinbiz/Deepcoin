@@ -1187,12 +1187,6 @@ unsigned int static NiteGravityWell(const CBlockIndex* pindexLast, const CBlockH
 
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-    if (pindexLast->nHeight <= 2) { // Blocks 1 and 2 have special difficulty rules
-        CBigNum bnNew;
-        bnNew.SetCompact(pindexLast->nBits); // Set to previous diff from genesis block which will be one
-        return bnNew.GetCompact();
-    }
-
     if (pindexLast->nHeight + 1 > 2851200)
         nTargetSpacing = 2* 60; // Deepcoin: 2 minute block target after 
     
