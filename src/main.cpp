@@ -36,7 +36,7 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x0000071288a535698e1a5145816d206f5699b461b6fd10622f622de15de5c0c6");
+uint256 hashGenesisBlock("0x0000003078b41d235f667a0908091ba42b1a5bbcdb62b24f8101fc302f32a2ee");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 26);
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -1214,9 +1214,8 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
         // Check proof of work matches claimed amount
         if (hash > bnTarget.getuint256())
             return error("CheckProofOfWork() : hash doesn't match nBits");
-
-        return true;
     }
+    return true;
 }
 
 // Return maximum amount of blocks that other nodes claim to have
@@ -2759,16 +2758,16 @@ bool LoadBlockIndex()
 {
     if (fTestNet)
     {
-        // CBlock(hash=00000d47bb3df920a65be7e8500f492d046be75cb410c339299445dd87525d9c, ver=1, hashPrevBlock=0000000000000000000000000000000000000000000000000000000000000000, hashMerkleRoot=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, nTime=1403684962, nBits=1d00ffff, nNonce=1017064580, vtx=1)
-        // CTransaction(hash=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, ver=1, vin.size=1, vout.size=1, nLockTime=0)
-        // CTxIn(COutPoint(0, 4294967295), coinbase 04ffff001d01042d4242432032352f30362f3134205553207370656369616c20666f726365732061727269766520696e2049726171)
-        // CTxOut(nValue=512.00000000, scriptPubKey=04e163fedcf0a31464ac92e0d5ebb4)
-        // vMerkleTree: 4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f
         pchMessageStart[0] = 0xbf;
         pchMessageStart[1] = 0xc0;
         pchMessageStart[2] = 0xd1;
         pchMessageStart[3] = 0xe2;
-        hashGenesisBlock = uint256("0x00000d47bb3df920a65be7e8500f492d046be75cb410c339299445dd87525d9c");
+        // CBlock(hash=0000003d50dde2a182dbed5d4874993de130d2016c40ffcdefa3a50146103c79, ver=1, hashPrevBlock=0, hashMerkleRoot=64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1, nTime=1403775580, nBits=1d3fffff, nNonce=1100043394, vtx=1)
+        // CTransaction(hash=64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+        // CTxIn(COutPoint(0, 4294967295), coinbase 04ffff001d0104324242432032362f30362f313420466972737420416e64726f69642057656172207761746368657320676f206f6e2073616c65)
+        // CTxOut(nValue=512.00000000, scriptPubKey=04e163fedcf0a31464ac92e0d5ebb4)
+        // vMerkleTree: 64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1
+        hashGenesisBlock = uint256("0x0000003d50dde2a182dbed5d4874993de130d2016c40ffcdefa3a50146103c79");
     }
 
     //
@@ -2798,13 +2797,13 @@ bool InitBlockIndex() {
     // Only add the genesis block if not reindexing (in which case we reuse the one already on disk)
     if (!fReindex) {
         // Genesis Block:
-        // CBlock(hash=0000071288a535698e1a5145816d206f5699b461b6fd10622f622de15de5c0c6, ver=1, hashPrevBlock=0000000000000000000000000000000000000000000000000000000000000000, hashMerkleRoot=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, nTime=1403684952, nBits=1d00ffff, nNonce=1061556860, vtx=1)
-        // CTransaction(hash=4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f, ver=1, vin.size=1, vout.size=1, nLockTime=0)
-        // CTxIn(COutPoint(0, 4294967295), coinbase 04ffff001d01042d4242432032352f30362f3134205553207370656369616c20666f726365732061727269766520696e2049726171)
+        // CBlock(hash=0000003078b41d235f667a0908091ba42b1a5bbcdb62b24f8101fc302f32a2ee, ver=1, hashPrevBlock=0, hashMerkleRoot=64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1, nTime=1403775570, nBits=1d3fffff, nNonce=1144281048, vtx=1)
+        // CTransaction(hash=64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+        // CTxIn(COutPoint(0, 4294967295), coinbase 04ffff001d0104324242432032362f30362f313420466972737420416e64726f69642057656172207761746368657320676f206f6e2073616c65)
         // CTxOut(nValue=512.00000000, scriptPubKey=04e163fedcf0a31464ac92e0d5ebb4)
-        // vMerkleTree: 4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f
+        // vMerkleTree: 64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1
 
-        const char* pszTimestamp = "BBC 25/06/14 US special forces arrive in Iraq";
+        const char* pszTimestamp = "BBC 26/06/14 First Android Wear watches go on sale";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -2816,15 +2815,22 @@ bool InitBlockIndex() {
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1403684952;
-        block.nBits    = 0x1d00ffff;
-        block.nNonce   = 1061556860;
+        block.nTime    = 1403775570;
+        block.nBits    = bnProofOfWorkLimit.GetCompact();
+        block.nNonce   = 1144281048;
 
         if (fTestNet)
         {
-            block.nTime    = 1403684962;
-            block.nNonce   = 1017064580;
+            block.nTime    = 1403775580;
+            block.nNonce   = 1100043394;
         }
+
+        printf("block.nTime = %u \n", block.nTime);
+        printf("block.nNonce = %u \n", block.nNonce);
+        printf("block.nVersion = %u \n", block.nVersion);
+        printf("block.GetHash = %s\n", block.GetHash().ToString().c_str());
+
+        block.print();
 
         //// debug print
         uint256 hash = block.GetHash();
@@ -2832,7 +2838,7 @@ bool InitBlockIndex() {
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
         block.print();
-        assert(block.hashMerkleRoot == uint256("0x4415aecc28ad9f892553caecd62ab8213130ff3ba1dc62059040fa78f909d01f"));
+        assert(block.hashMerkleRoot == uint256("0x64e775f7f14f1e167375b79e410d28ef36f4d8146b429423687da13d214ad0e1"));
         assert(hash == hashGenesisBlock);
 
         // Start new block file
