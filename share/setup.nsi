@@ -5,21 +5,24 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.8.7.0
+!define VERSION 0.8.7.1
 !define COMPANY "Deepcoin project"
 !define URL http://deepcoin.biz/
 
 # MUI Symbol Definitions
-!define MUI_ICON "../share/pixmaps/bitcoin.ico"
+!define MUI_ICON "pixmaps\bitcoin.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "pixmaps\nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_HEADERIMAGE_BITMAP
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER Deepcoin
 !define MUI_FINISHPAGE_RUN $INSTDIR\deepcoin-qt.exe
+!define MUI_FINISHPAGE_RUN_TEXT "Launch Deepcoin"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 # Included files
@@ -35,6 +38,7 @@ Var StartMenuGroup
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
 
 # Installer attributes
 OutFile deepcoin-${VERSION}-setup.exe
@@ -60,8 +64,6 @@ Section -Main SEC0000
     SetOverwrite on
     File deepcoin-qt.exe
     File /oname=COPYING.txt ../COPYING
-    SetOutPath $INSTDIR\daemon
-    File deepcoind.exe
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd
