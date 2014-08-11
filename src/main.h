@@ -68,6 +68,9 @@ static const int fHaveUPnP = true;
 static const int fHaveUPnP = false;
 #endif
 
+static const int nTestFork = 40;
+static const int nHardFork = 76800;
+static const int nSoftFork = 1408406400;
 
 extern CScript COINBASE_FLAGS;
 
@@ -1374,6 +1377,29 @@ public:
         vMerkleTree.clear();
     }
 
+    uint256 GetPoWHash() const
+    {
+        int nHeight = GetBlockHeight();
+        if ((nHeight >= nHardFork) || (fTestNet && (nHeight >= nTestFork))) {
+            return Hash3(BEGIN(nVersion), END(nNonce));
+        }
+        return Hash5(BEGIN(nVersion), END(nNonce));
+    }
+
+    int GetBlockHeight() const {
+        if(vtx.size()) {
+            std::vector<unsigned char>::const_iterator scriptsig = vtx[0].vin[0].scriptSig.begin();
+            unsigned char i, scount = scriptsig[0];
+            if(scount < 4) {
+                int height = 0;
+                unsigned char *pheight = (unsigned char *) &height;
+                for(i = 0; i < scount; i++)
+                  pheight[i] = scriptsig[i + 1];
+                return(height);
+            }
+        }
+        return(-1);
+    }
     CBlockHeader GetBlockHeader() const
     {
         CBlockHeader block;
@@ -1484,10 +1510,6 @@ public:
         catch (std::exception &e) {
             return error("%s() : deserialize or I/O error", __PRETTY_FUNCTION__);
         }
-
-        // Check the header
-        if (!CheckProofOfWork(GetHash(), nBits))
-            return error("CBlock::ReadFromDisk() : errors in block header");
 
         return true;
     }
