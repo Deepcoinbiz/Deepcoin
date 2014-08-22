@@ -1259,16 +1259,12 @@ unsigned int static NiteGravityWell(const CBlockIndex* pindexLast, const CBlockH
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
     int nHeight = pindexLast->nHeight + 1;
-    int diffMode = 0;
-    if (nHeight >= nHardFork || (fTestNet && (nHeight >= nTestFork))) {
+    if (nHeight >= nHardFork) {
         if (!x3Fork) x3Fork = true;
-        nTargetSpacing = 2 * 60; // Deepcoin: 2 minute block target after 
         if (nHeight == nHardFork) return(difficultyReset.GetCompact());
-        if (nHeight < nHardFork + 10) diffMode = 1;
-        if (fTestNet && (nHeight == nTestFork)) return(difficultyReset.GetCompact());
-        if (fTestNet && (nHeight < nTestFork + 10)) diffMode = 1;
+        if (nHeight < nHardFork + 10) return GetNextWorkRequired_V1(pindexLast, pblock);
     }
-    
+
     static const int64 BlocksTargetSpacing = nTargetSpacing;
     static const unsigned int TimeDaySeconds = nTargetTimespan;
     int64 PastSecondsMin = TimeDaySeconds * 0.25;
@@ -1276,7 +1272,6 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     uint64 PastBlocksMin = PastSecondsMin / BlocksTargetSpacing;
     uint64 PastBlocksMax = PastSecondsMax / BlocksTargetSpacing;
 
-    if (diffMode == 1) return GetNextWorkRequired_V1(pindexLast, pblock);
     return NiteGravityWell(pindexLast, pblock, BlocksTargetSpacing, PastBlocksMin, PastBlocksMax);
 }
 

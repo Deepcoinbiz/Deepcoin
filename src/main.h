@@ -68,7 +68,6 @@ static const int fHaveUPnP = true;
 static const int fHaveUPnP = false;
 #endif
 
-static const int nTestFork = 40;
 static const int nHardFork = 76800;
 static const int nSoftFork = 1408406400;
 
@@ -1380,7 +1379,7 @@ public:
     uint256 GetPoWHash() const
     {
         int nHeight = GetBlockHeight();
-        if ((nHeight >= nHardFork) || (fTestNet && (nHeight >= nTestFork))) {
+        if (nHeight >= nHardFork) {
             return Hash3(BEGIN(nVersion), END(nNonce));
         }
         return Hash5(BEGIN(nVersion), END(nNonce));
