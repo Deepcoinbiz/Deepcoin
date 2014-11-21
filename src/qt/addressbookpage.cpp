@@ -76,7 +76,7 @@ AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget *parent) :
         ui->resetPrivateKeysButton->setVisible(false);
         break;
     case StealthAddressTab:
-        ui->labelExplanation->setText(tr("These are your Monocle addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you."));
+        ui->labelExplanation->setText(tr("These are your Deepcoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you."));
         ui->deleteAddress->setVisible(false);
         ui->signMessage->setVisible(false);
         ui->newAddress->setVisible(false);

@@ -2481,7 +2481,7 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
                    // extract ephem_pubkey
                    ephem_pubkey.insert(ephem_pubkey.end(), txOut.scriptPubKey.begin() + 2, txOut.scriptPubKey.begin() + 35);
 
-                   // generate Monocle address from ephem_pubkey, scan_secret and spend_secret
+                   // generate Deepcoin address from ephem_pubkey, scan_secret and spend_secret
                    BOOST_FOREACH(const CStealthAddressEntry& stealthAddress, listStealthAddress)
                    {
                        for(unsigned int i = 0; i < 32; i++)
