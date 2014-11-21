@@ -63,7 +63,7 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
     File deepcoin-qt.exe
-    File /oname=COPYING.txt ../COPYING
+    File /oname=COPYING.txt ..\COPYING
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 SectionEnd

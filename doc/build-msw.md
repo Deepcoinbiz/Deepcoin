@@ -65,9 +65,10 @@ Boost
 -----
 MSYS shell:
 
-	downloaded boost jam 3.1.18
-	cd \boost-1.50.0-mgw
-	bjam toolset=gcc --build-type=complete stage
+cd C:\deps\boost_1_55_0\
+bootstrap.bat mingw
+b2 --build-type=complete --with-chrono --with-random --with-filesystem --with-program_options --with-system --with-thread toolset=gcc variant=release link=static threading=multi runtime-link=static stage
+
 
 MiniUPnPc
 ---------
@@ -79,6 +80,16 @@ MSYS shell:
 	make -f Makefile.mingw
 	mkdir miniupnpc
 	cp *.h miniupnpc/
+
+Secp256k1
+---------
+MSYS shell:
+
+    git clone https://github.com/bitcoin/secp256k1.git
+    cd secp256k1
+    ./autogen.sh
+    ./configure
+    make
 
 Deepcoin
 -------

@@ -29,6 +29,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget *parent) :
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
     ui->payTo->setPlaceholderText(tr("Enter a Deepcoin address (e.g. DAYGPJgC8hzJhycJxTzj3SisDngxaAcdU5)"));
+
 #endif
     setFocusPolicy(Qt::TabFocus);
     setFocusProxy(ui->payTo);
@@ -122,7 +123,7 @@ bool SendCoinsEntry::validate()
     }
 
     if(!ui->payTo->hasAcceptableInput() ||
-       (model && !model->validateAddress(ui->payTo->text())))
+       (model && !model->validateAddress(ui->payTo->text(), true)))
     {
         ui->payTo->setValid(false);
         retval = false;

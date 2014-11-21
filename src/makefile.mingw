@@ -107,7 +107,8 @@ OBJS= \
 	obj/echo.o \
 	obj/shavite.o \
 	obj/simd.o \
-    obj/checkpointsync.o
+    obj/checkpointsync.o \
+    obj/stealth.o
 
 all: deepcoind.exe
 
@@ -119,6 +120,7 @@ test check: test_deepcoin.exe FORCE
 #
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
+LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a /usr/local/lib/libsecp256k1.a /usr/lib/libgmp.a
 
 leveldb/libleveldb.a:
 	cd leveldb && $(MAKE) CC=$(CC) CXX=$(CXX) OPT="$(CFLAGS)" TARGET_OS=NATIVE_WINDOWS libleveldb.a libmemenv.a && cd ..

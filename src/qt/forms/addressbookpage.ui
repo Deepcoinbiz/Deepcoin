@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>760</width>
+    <width>1754</width>
     <height>380</height>
    </rect>
   </property>
@@ -136,6 +136,39 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="newStealthAddress">
+       <property name="text">
+        <string>New Stealth Address</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../bitcoin.qrc">
+         <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="importStealthAddress">
+       <property name="text">
+        <string>Import Stealth Address Transactions</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../bitcoin.qrc">
+         <normaloff>:/icons/edit</normaloff>:/icons/edit</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="resetPrivateKeysButton">
+       <property name="text">
+        <string>Reset Private Keys Status</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../bitcoin.qrc">
+         <normaloff>:/icons/key</normaloff>:/icons/key</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -184,3 +217,4 @@
  </resources>
  <connections/>
 </ui>
+

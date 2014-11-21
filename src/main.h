@@ -10,6 +10,7 @@
 #include "net.h"
 #include "script.h"
 #include "hashblock.h"
+#include "stealth.h"
 
 #include <list>
 
