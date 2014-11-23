@@ -59,6 +59,7 @@ Build requirements:
 
 	sudo apt-get install build-essential
 	sudo apt-get install libssl-dev
+    sudo apt-get install libgmp3-dev
 
 for Ubuntu 12.04:
 
@@ -75,16 +76,6 @@ for other Ubuntu & Debian:
 	sudo apt-get install libdb4.8++-dev
 	sudo apt-get install libboost1.37-dev
  (If using Boost 1.37, append -mt to the boost libraries in the makefile)
-
-libsecp256k1:
-
-    sudo apt-get install libgmp-dev
-    git clone https://github.com/bitcoin/secp256k1.git
-    cd secp256k1
-    ./autogen.sh
-    ./configure
-    make
-    make install
 
 Optional:
 

@@ -85,8 +85,7 @@ Secp256k1
 ---------
 MSYS shell:
 
-    git clone https://github.com/bitcoin/secp256k1.git
-    cd secp256k1
+    cd src/secp256k1
     ./autogen.sh
     ./configure
     make

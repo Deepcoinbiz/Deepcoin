@@ -103,6 +103,21 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
 }
 
+INCLUDEPATH += src/secp256k1/include
+win32 {
+LIBS += $$PWD/src/secp256k1/.libs/libsecp256k1.a -lgmp
+} else {
+LIBS += $$PWD/src/secp256k1/libsecp256k1.a -lgmp
+}
+!win32 {
+gensecp256k1.commands = cd $$PWD/src/secp256k1 && make libsecp256k1.a
+gensecp256k1.target = $$PWD/src/secp256k1/libsecp256k1.a
+gensecp256k1.depends = FORCE
+PRE_TARGETDEPS += $$PWD/src/secp256k1/libsecp256k1.a
+QMAKE_EXTRA_TARGETS += gensecp256k1
+QMAKE_CLEAN += $$PWD/src/secp256k1/libsecp256k1.a
+}
+
 INCLUDEPATH += src/leveldb/include src/leveldb/helpers
 LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
 !win32 {
@@ -433,9 +448,8 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
 macx:QMAKE_INFO_PLIST = share/qt/Info.plist
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
-INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += $$join(SECP_PATH,,-L,) -lsecp256k1 -lgmp
+INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH $$GMP_INCLUDE_PATH
+LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,) $$join(GMP_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 # -lgdi32 has to happen after -lcrypto (see  #681)
 win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
