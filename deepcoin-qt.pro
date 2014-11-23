@@ -104,18 +104,15 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
 }
 
 INCLUDEPATH += src/secp256k1/include
-win32 {
 LIBS += $$PWD/src/secp256k1/.libs/libsecp256k1.a -lgmp
-} else {
-LIBS += $$PWD/src/secp256k1/libsecp256k1.a -lgmp
-}
+
 !win32 {
-gensecp256k1.commands = cd $$PWD/src/secp256k1 && make libsecp256k1.a
-gensecp256k1.target = $$PWD/src/secp256k1/libsecp256k1.a
+gensecp256k1.commands = cd $$PWD/src/secp256k1 && ./autogen.sh && ./configure && make
+gensecp256k1.target = $$PWD/src/secp256k1/.libs/libsecp256k1.a
 gensecp256k1.depends = FORCE
-PRE_TARGETDEPS += $$PWD/src/secp256k1/libsecp256k1.a
+PRE_TARGETDEPS += $$PWD/src/secp256k1/.libs/libsecp256k1.a
 QMAKE_EXTRA_TARGETS += gensecp256k1
-QMAKE_CLEAN += $$PWD/src/secp256k1/libsecp256k1.a
+QMAKE_CLEAN += $$PWD/src/secp256k1/.libs/libsecp256k1.a
 }
 
 INCLUDEPATH += src/leveldb/include src/leveldb/helpers

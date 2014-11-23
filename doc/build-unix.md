@@ -58,6 +58,8 @@ Dependency Build Instructions: Ubuntu & Debian
 Build requirements:
 
 	sudo apt-get install build-essential
+    sudo apt-get install autoconf
+    sudo apt-get install libtool
 	sudo apt-get install libssl-dev
     sudo apt-get install libgmp3-dev
 

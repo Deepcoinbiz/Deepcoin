@@ -125,6 +125,10 @@ LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a /usr/local/
 leveldb/libleveldb.a:
 	cd leveldb && $(MAKE) CC=$(CC) CXX=$(CXX) OPT="$(CFLAGS)" TARGET_OS=NATIVE_WINDOWS libleveldb.a libmemenv.a && cd ..
 
+# libsecp256k1 support
+LIBS += $(CURDIR)/secp256k1/.libs/libsecp256k1.a -lgmp
+DEFS += $(addprefix -I,$(CURDIR)/secp256k1/include)
+
 obj/%.o: %.cpp $(HEADERS)
 	$(CXX) -c $(CFLAGS) -o $@ $<
 

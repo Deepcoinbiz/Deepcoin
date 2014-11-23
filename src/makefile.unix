@@ -41,8 +41,7 @@ LIBS += \
    -l boost_random$(BOOST_LIB_SUFFIX) \
    -l db_cxx$(BDB_LIB_SUFFIX) \
    -l ssl \
-   -l crypto \
-   -l gmp
+   -l crypto
 
 TESTLIBS += \
  -Wl,-B$(LMODE) \
@@ -165,17 +164,20 @@ test check: test_deepcoin FORCE
 #
 MAKEOVERRIDES =
 #LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
-LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a /usr/local/lib/libsecp256k1.a /usr/lib/x86_64-linux-gnu/libgmp.a
+LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 leveldb/libleveldb.a:
 	@echo "Building LevelDB ..." && cd leveldb && $(MAKE) CC=$(CC) CXX=$(CXX) OPT="$(xCXXFLAGS)" libleveldb.a libmemenv.a && cd ..
 
 # libsecp256k1 support
-LIBS += $(CURDIR)/secp256k1/libsecp256k1.a
-DEFS += $(addprefix -I,$(CURDIR)/secp256k1/include) -DUSE_SECP256K1
+LIBS += $(CURDIR)/secp256k1/.libs/libsecp256k1.a -lgmp
+DEFS += $(addprefix -I,$(CURDIR)/secp256k1/include)
+$(info Building secp256k1 Required libtool autoconf libgmp3-dev)
 $(shell mkdir -p $(CURDIR)/secp256k1/obj >/dev/null)
-$(shell make -C $(CURDIR)/secp256k1 libsecp256k1.a >/dev/null)
+$(shell cd secp256k1; ./autogen.sh >/dev/null)
+$(shell cd secp256k1; ./configure >/dev/null)
+$(shell cd secp256k1; make >/dev/null)
 
 # auto-generated dependencies:
 -include obj/*.P
