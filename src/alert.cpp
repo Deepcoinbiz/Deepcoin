@@ -144,7 +144,9 @@ bool CAlert::RelayTo(CNode* pnode) const
 
 bool CAlert::CheckSignature() const
 {
-    CPubKey key(ParseHex(fTestNet ? pszTestKey : pszMainKey));
+    CKey key;
+    if (!key.SetPubKey(ParseHex(fTestNet ? pszTestKey : pszMainKey)))
+        return error("CAlert::CheckSignature() : SetPubKey failed");
     if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
         return error("CAlert::CheckSignature() : verify signature failed");
 

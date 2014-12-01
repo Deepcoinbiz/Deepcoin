@@ -315,7 +315,10 @@ bool SetCheckpointPrivKey(std::string strPrivKey)
     CBitcoinSecret vchSecret;
     if (!vchSecret.SetString(strPrivKey))
         return error("SendSyncCheckpoint: Checkpoint master key invalid");
-    CKey key = vchSecret.GetKey(); // if key is not correct openssl may crash
+    CKey key;
+    bool fCompressed;
+    CSecret secret = vchSecret.GetSecret(fCompressed);
+    key.SetSecret(secret, fCompressed); // if key is not correct openssl may crash
     if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
         return false;
 
@@ -337,7 +340,10 @@ bool SendSyncCheckpoint(uint256 hashCheckpoint)
     CBitcoinSecret vchSecret;
     if (!vchSecret.SetString(CSyncCheckpoint::strMasterPrivKey))
         return error("SendSyncCheckpoint: Checkpoint master key invalid");
-    CKey key = vchSecret.GetKey(); // if key is not correct openssl may crash
+    CKey key;
+    bool fCompressed;
+    CSecret secret = vchSecret.GetSecret(fCompressed);
+    key.SetSecret(secret, fCompressed); // if key is not correct openssl may crash
     if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
         return error("SendSyncCheckpoint: Unable to sign checkpoint, check private key?");
 
@@ -388,8 +394,10 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 // verify signature of sync-checkpoint message
 bool CSyncCheckpoint::CheckSignature()
 {
+    CKey key;
     std::string strMasterPubKey = fTestNet? CSyncCheckpoint::strTestPubKey : CSyncCheckpoint::strMainPubKey;
-    CPubKey key(ParseHex(strMasterPubKey));
+    if (!key.SetPubKey(ParseHex(strMasterPubKey)))
+        return error("CSyncCheckpoint::CheckSignature() : SetPubKey failed");
     if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
         return error("CSyncCheckpoint::CheckSignature() : verify signature failed");
 

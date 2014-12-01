@@ -398,11 +398,11 @@ Value verifymessage(const Array& params, bool fHelp)
     ss << strMessageMagic;
     ss << strMessage;
 
-    CPubKey pubkey;
-    if (!pubkey.RecoverCompact(ss.GetHash(), vchSig))
+    CKey key;
+    if (!key.SetCompactSignature(ss.GetHash(), vchSig))
         return false;
 
-    return (pubkey.GetID() == keyID);
+    return (key.GetPubKey().GetID() == keyID);
 }
 
 
@@ -743,7 +743,7 @@ static CScript _createmultisig(const Array& params)
         throw runtime_error(
             strprintf("not enough keys supplied "
                       "(got %"PRIszu" keys, but need at least %d to redeem)", keys.size(), nRequired));
-    std::vector<CPubKey> pubkeys;
+    std::vector<CKey> pubkeys;
     pubkeys.resize(keys.size());
     for (unsigned int i = 0; i < keys.size(); i++)
     {
@@ -761,18 +761,16 @@ static CScript _createmultisig(const Array& params)
             if (!pwalletMain->GetPubKey(keyID, vchPubKey))
                 throw runtime_error(
                     strprintf("no full public key for address %s",ks.c_str()));
-            if (!vchPubKey.IsFullyValid())
+            if (!vchPubKey.IsValid() || !pubkeys[i].SetPubKey(vchPubKey))
                 throw runtime_error(" Invalid public key: "+ks);
-            pubkeys[i] = vchPubKey;
         }
 
         // Case 2: hex public key
         else if (IsHex(ks))
         {
             CPubKey vchPubKey(ParseHex(ks));
-            if (!vchPubKey.IsFullyValid())
+            if (!vchPubKey.IsValid() || !pubkeys[i].SetPubKey(vchPubKey))
                 throw runtime_error(" Invalid public key: "+ks);
-            pubkeys[i] = vchPubKey;
         }
         else
         {
