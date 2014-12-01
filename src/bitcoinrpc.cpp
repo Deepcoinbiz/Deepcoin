@@ -271,6 +271,13 @@ static const CRPCCommand vRPCCommands[] =
     { "lockunspent",            &lockunspent,            false,     false,      true },
     { "listlockunspent",        &listlockunspent,        false,     false,      true },
     { "verifychain",            &verifychain,            true,      false,      false },
+    { "getnewstealthaddress",   &getnewstealthaddress,   false,     false,      true },
+    { "liststealthaddresses",   &liststealthaddresses,   false,     false,      true },
+    { "importstealthaddress",   &importstealthaddress,   false,     false,      true },
+    { "sendtostealthaddress",   &sendtostealthaddress,   false,     false,      true },
+    { "clearwallettransactions",&clearwallettransactions,false,     false,      true },
+    { "scanforalltxns",         &scanforalltxns,         false,     false,      true },
+    { "scanforstealthtxns",     &scanforstealthtxns,     false,     false,      true },
 };
 
 CRPCTable::CRPCTable()
@@ -1208,6 +1215,7 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "sendalert"              && n > 5) ConvertTo<boost::int64_t>(params[5]);
     if (strMethod == "sendalert"              && n > 6) ConvertTo<boost::int64_t>(params[6]);
     if (strMethod == "enforcecheckpoint"      && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "sendtostealthaddress"   && n > 1) ConvertTo<double>(params[1]);
 
     return params;
 }

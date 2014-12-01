@@ -241,8 +241,16 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             //    DateTimeStrFormat("%Y-%m-%d %H:%M:%S", wtx.GetBlockTime()).c_str(),
             //    wtx.hashBlock.ToString().c_str(),
             //    wtx.mapValue["message"].c_str());
-        }
-        else if (strType == "acentry")
+        } else if (strType == "sxAddr")
+        {
+            if (fDebug)
+                printf("WalletDB ReadKeyValue sxAddr\n");
+            
+            CStealthAddress sxAddr;
+            ssValue >> sxAddr;
+            
+            pwallet->stealthAddresses.insert(sxAddr);
+        } else if (strType == "acentry")
         {
             string strAccount;
             ssKey >> strAccount;
@@ -339,6 +347,17 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 return false;
             }
             fIsEncrypted = true;
+        } else if (strType == "sxKeyMeta")
+        {
+            if (fDebug)
+                printf("WalletDB ReadKeyValue sxKeyMeta\n");
+            
+            CKeyID keyId;
+            ssKey >> keyId;
+            CStealthKeyMetadata sxKeyMeta;
+            ssValue >> sxKeyMeta;
+
+            pwallet->mapStealthKeyMeta[keyId] = sxKeyMeta;
         }
         else if (strType == "defaultkey")
         {

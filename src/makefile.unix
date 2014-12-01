@@ -149,7 +149,8 @@ OBJS= \
 	obj/echo.o \
 	obj/shavite.o \
 	obj/simd.o \
-    obj/checkpointsync.o
+    obj/checkpointsync.o \
+    obj/stealth.o
 
 all: deepcoind
 

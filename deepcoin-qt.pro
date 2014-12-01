@@ -165,6 +165,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/db.h \
     src/walletdb.h \
     src/script.h \
+    src/stealth.h \
     src/init.h \
     src/bloom.h \
     src/mruset.h \
@@ -301,7 +302,8 @@ SOURCES += src/qt/bitcoin.cpp \
     src/shavite.c \
     src/echo.c \
     src/simd.c \
-    src/checkpointsync.cpp
+    src/checkpointsync.cpp \
+    src/stealth.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 

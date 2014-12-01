@@ -19,7 +19,7 @@ public:
 
     State validate(QString &input, int &pos) const;
 
-    static const int MaxAddressLength = 35;
+    static const int MaxAddressLength = 128; // accept stealth addresses
 };
 
 #endif // BITCOINADDRESSVALIDATOR_H

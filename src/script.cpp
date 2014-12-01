@@ -20,7 +20,6 @@ bool CheckSig(vector<unsigned char> vchSig, vector<unsigned char> vchPubKey, CSc
 
 
 
-typedef vector<unsigned char> valtype;
 static const valtype vchFalse(0);
 static const valtype vchZero(0);
 static const valtype vchTrue(1, 1);
@@ -1373,6 +1372,10 @@ public:
     bool operator()(const CNoDestination &dest) const { return false; }
     bool operator()(const CKeyID &keyID) const { return keystore->HaveKey(keyID); }
     bool operator()(const CScriptID &scriptID) const { return keystore->HaveCScript(scriptID); }
+    bool operator()(const CStealthAddress &stxAddr) const
+    {
+        return stxAddr.scan_secret.size() == ec_secret_size;
+    }
 };
 
 bool IsMine(const CKeyStore &keystore, const CTxDestination &dest)
@@ -1789,6 +1792,13 @@ public:
         script->clear();
         *script << OP_HASH160 << scriptID << OP_EQUAL;
         return true;
+    }
+    
+    bool operator()(const CStealthAddress &stxAddr) const {
+        script->clear();
+        //*script << OP_HASH160 << scriptID << OP_EQUAL;
+        printf("TODO\n");
+        return false;
     }
 };
 
