@@ -1193,6 +1193,12 @@ void MapPort(bool)
 // The second name should resolve to a list of seed addresses.
 static const char *strMainNetDNSSeed[][2] = {
     {"alltheco.in", "dcndnsseed.alltheco.in"},
+    {"static1.dcn.pm", "static1.dcn.pm"},
+    {"static2.dcn.pm", "static2.dcn.pm"},
+    {"static3.dcn.pm", "static3.dcn.pm"},
+    {"dynamic1.dcn.pm", "dynamic1.dcn.pm"},
+    {"dynamic2.dcn.pm", "dynamic2.dcn.pm"},
+    {"dynamic3.dcn.pm", "dynamic3.dcn.pm"},
     {NULL, NULL}
 };
 
